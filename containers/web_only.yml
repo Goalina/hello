@@ -111,8 +111,7 @@ hooks:
           - git clone https://github.com/discourse/discourse-solved.git
           - git clone https://github.com/discourse/discourse-gamification.git
           - git clone https://github.com/discourse/discourse-reactions.git
-          # - git clone https://github.com/discourse/discourse-ai.git
-          # - git clone https://github.com/opensourceways/discourse-multilingual.git
+          - git clone https://github.com/discourse/discourse-ai.git
 
 ## Remember, this is YAML syntax - you can only have one block with a name
 run:
@@ -123,7 +122,7 @@ run:
         - bash -c "touch -a /shared/log/rails/{sidekiq,puma.err,puma}.log"
         - bash -c "ln -sf /shared/log/rails/{sidekiq,puma.err,puma}.log log/"
         - sed -i 's/default \$scheme;/default https;/' /etc/nginx/conf.d/discourse.conf
-
+  
   - file:
       path: "/etc/nginx/conf.d/outlets/before-server/20-redirect-http-to-https.conf"
       contents: ""

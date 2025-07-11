@@ -1,10 +1,11 @@
 FROM local_discourse/web_only:latest
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # 设置目录权限
 RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/logrotate && \
-	mkdir -p /shared/state/anacron-spool && ln -s /shared/state/anacron-spool /var/spool/anacron && \
-	mkdir -p /shared/uploads && mkdir -p /shared/backups && \
-	rm -rf /shared/tmp/{backups,restores} && mkdir -p /shared/tmp/{backups,restores}
+    mkdir -p /shared/state/anacron-spool && ln -s /shared/state/anacron-spool /var/spool/anacron && \
+    mkdir -p /shared/uploads && mkdir -p /shared/backups && \
+    rm -rf /shared/tmp/{backups,restores} && mkdir -p /shared/tmp/{backups,restores}
 
 # 参考 00-fix-var-logs 文件修改用户权限
 RUN rm -f /etc/runit/1.d/00-fix-var-logs && \
@@ -36,11 +37,12 @@ RUN sed -i "s|user www-data;|# user discourse;|g" /etc/nginx/nginx.conf
 # 修改 discourse 用户shell的umask配置和历史记录设置
 RUN echo "umask 0027" >> /home/discourse/.bashrc && \
     echo "set +o history" >> /home/discourse/.bashrc && \
-    sed -i "s|HISTSIZE=1000|HISTSIZE=0|" /home/discourse/.bashrc
+    sed -i "s|HISTSIZE=1000|HISTSIZE=0|" /home/discourse/.bashrc && \
+    source /home/discourse/.bashrc
 
 # 限制 discourse 用户的密码有效期
 RUN chage --maxdays 30 discourse && \
-    passwd -| discourse && \
+    passwd -l discourse && \
     usermod -s /sbin/nologin sync
 
 WORKDIR /var/www/discourse
@@ -60,6 +62,73 @@ RUN chown -R discourse:discourse /etc/runit/1.d && \
     chown -R discourse:discourse /dev && \
     chown -R discourse:discourse /var/spool && \
     chown -R discourse:discourse /etc/ssl
+
+# 降权 /var 下关键目录
+RUN chown -R discourse:discourse /var/backups /var/local /var/mail /var/nginx /var/www && \
+    find /var/backups -type d -exec chmod 750 {} \; && \
+    find /var/backups -type f -exec chmod 640 {} \; && \
+    find /var/local -type d -exec chmod 750 {} \; && \
+    find /var/local -type f -exec chmod 640 {} \; && \
+    find /var/mail -type d -exec chmod 750 {} \; && \
+    find /var/mail -type f -exec chmod 640 {} \; && \
+    find /var/nginx -type d -exec chmod 750 {} \; && \
+    find /var/nginx -type f -exec chmod 640 {} \; && \
+    find /var/www -type d -exec chmod 750 {} \; && \
+    find /var/www -type f -executable -exec chmod 750 {} \; && \
+    find /var/www -type f ! -executable -exec chmod 640 {} \;
+
+
+# 处理 /etc/nginx 的所有者及权限
+RUN chown -R discourse:discourse /etc/nginx && \
+    find /etc/nginx -type d   -exec chmod 750 {} \; && \
+    find /etc/nginx -type f -perm -u=w -exec chmod 640 {} \; && \
+    find /etc/nginx -type f ! -perm -u=w -exec chmod 400 {} \; 
+
+# 目录权限收紧
+RUN chown -R discourse:discourse /var/www/discourse && \
+    find /var/www/discourse -type d   -exec chmod 750 {} \; && \
+    find /var/www/discourse -type f -executable -exec chmod 750 {} \; && \
+    find /var/www/discourse -type f ! -executable -exec chmod 640 {} \;
+
+# 目录权限收紧
+RUN chown -R discourse:discourse /home/discourse && \
+    chmod 550 /home/discourse && \
+    find /home/discourse -type d -exec chmod 550 {} \; && \
+    find /home/discourse -type f -exec chmod 440 {} \;
+
+# remove sudo
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive SUDO_FORCE_REMOVE=yes apt-get purge -y sudo && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
+
+# 卸载所有构建/调试工具
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get purge -y \
+    build-essential \
+    cmake \
+    make \
+    autoconf \
+    automake \
+    libtool \
+    pkg-config \
+    flex \
+    mcpp \
+    gcc \
+    g++ \
+    cpp \
+    binutils \
+    gdb \
+    strace \
+    ltrace \
+    tcpdump \
+    nmap \
+    netcat-openbsd \
+    wireshark-common \
+    wireshark \
+    rpcbind && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
 # 切换到非root用户
 USER discourse
