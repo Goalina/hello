@@ -107,7 +107,7 @@ hooks:
           - git clone https://github.com/discourse/docker_manager.git
           - git clone https://GIT_USERNAME:GIT_PASSWORD@github.com/opensourceways/discourse-easecheck.git
           - git clone https://github.com/opensourceways/discourse-oauth2-basic.git
-          - git clone https://github.com/opensourceways/discourse-translator.git
+          - git clone https://github.com/opensourceways/discourse-translator.git -b release
           - git clone https://github.com/discourse/discourse-solved.git
           - git clone https://github.com/discourse/discourse-gamification.git
           - git clone https://github.com/discourse/discourse-reactions.git

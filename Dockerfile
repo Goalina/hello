@@ -7,6 +7,15 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     mkdir -p /shared/uploads && mkdir -p /shared/backups && \
     rm -rf /shared/tmp/{backups,restores} && mkdir -p /shared/tmp/{backups,restores}
 
+RUN rm /etc/apt/trusted.gpg && \
+    curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/yarn.gpg && \
+    apt-get update
+
+RUN yes | apt purge -y postgresql-client-15 && \
+    apt autoremove -y && \
+    apt install postgresql-client-16 -y && \
+    pg_dump --version
+
 # 参考 00-fix-var-logs 文件修改用户权限
 RUN rm -f /etc/runit/1.d/00-fix-var-logs && \
     mkdir -p /var/log/nginx && \
@@ -27,9 +36,11 @@ RUN rm -rf /etc/service/cron
 RUN mkdir -p /shared/log/rails && \
     chown -R discourse:discourse /shared/log/rails
 COPY ./discourse_config/run /etc/service/unicorn/run
+COPY ./discourse_config/discourse /usr/local/bin/discourse
 COPY ./discourse_config/00-ensure-links /etc/runit/1.d/00-ensure-links
 RUN chmod +x /etc/service/unicorn/run && \
-    chmod +x /etc/runit/1.d/00-ensure-links
+    chmod +x /etc/runit/1.d/00-ensure-links && \
+    chmod +x /usr/local/bin/discourse
 
 # 修改 nginx 的启动脚本，适配切换到普通用户的修改
 RUN sed -i "s|user www-data;|# user discourse;|g" /etc/nginx/nginx.conf
