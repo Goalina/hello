@@ -11,9 +11,9 @@ RUN rm /etc/apt/trusted.gpg && \
     curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/yarn.gpg && \
     apt-get update
 
-RUN yes | apt purge -y postgresql-client-15 && \
-    apt autoremove -y && \
-    apt install postgresql-client-16 -y && \
+RUN DEBIAN_FRONTEND=noninteractive apt purge -y postgresql-client-15 && \
+    DEBIAN_FRONTEND=noninteractive apt autoremove -y && \
+    DEBIAN_FRONTEND=noninteractive apt install -y postgresql-client-16 && \
     pg_dump --version
 
 # 参考 00-fix-var-logs 文件修改用户权限
