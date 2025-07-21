@@ -45,6 +45,10 @@ RUN chmod +x /etc/service/unicorn/run && \
 # 修改 nginx 的启动脚本，适配切换到普通用户的修改
 RUN sed -i "s|user www-data;|# user discourse;|g" /etc/nginx/nginx.conf
 
+# 禁用 TLSv1 和 TLSv1.1，仅保留 TLSv1.2+TLSv1.3
+RUN sed -i 's|ssl_protocols .*|ssl_protocols TLSv1.2 TLSv1.3;|' /etc/nginx/nginx.conf && \
+    sed -i 's|ssl_protocols .*|ssl_protocols TLSv1.2 TLSv1.3;|' /etc/nginx/conf.d/discourse.conf
+
 # 修改 discourse 用户shell的umask配置和历史记录设置
 RUN echo "umask 0027" >> /home/discourse/.bashrc && \
     echo "set +o history" >> /home/discourse/.bashrc && \
@@ -58,6 +62,10 @@ RUN chage --maxdays 30 discourse && \
 
 WORKDIR /var/www/discourse
 COPY ./discourse_config/rails /usr/local/bin/rails
+
+# 忽略全零 IP
+RUN sed -i "/def get(ip)/a \\    return nil if ip == '0.0.0.0'  # ignore all-zero IP" \
+    /var/www/discourse/lib/discourse_ip_info.rb
 
 # 修改权限
 RUN chown -R discourse:discourse /etc/runit/1.d && \
@@ -103,9 +111,9 @@ RUN chown -R discourse:discourse /var/www/discourse && \
 
 # 目录权限收紧
 RUN chown -R discourse:discourse /home/discourse && \
-    chmod 550 /home/discourse && \
-    find /home/discourse -type d -exec chmod 550 {} \; && \
-    find /home/discourse -type f -exec chmod 440 {} \;
+    chmod 750 /home/discourse && \
+    find /home/discourse -type d -exec chmod 750 {} \; && \
+    find /home/discourse -type f -exec chmod 640 {} \;
 
 # remove sudo
 RUN apt-get update && \
