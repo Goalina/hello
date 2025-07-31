@@ -131,8 +131,8 @@ run:
       hook: ssl
       path: "/etc/nginx/conf.d/outlets/server/20-https.conf"
       contents: |
-        listen 8080 ssl;
-        listen [::]:8080 ssl;
+        listen 8080;
+        listen [::]:8080;
         http2 on;
 
         # ssl_protocols TLSv1.2 TLSv1.3;
