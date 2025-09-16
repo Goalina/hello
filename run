@@ -1,13 +1,1 @@
-#!/bin/bash
-exec 2>&1
-# redis
-# postgres
-cd /var/www/discourse
-# before precompile
-if [[ -z "$PRECOMPILE_ON_BOOT" ]]; then
-    PRECOMPILE_ON_BOOT=1
-fi
-if [ -f /usr/local/bin/create_db ] && [ "$CREATE_DB_ON_BOOT" = "1" ]; then /usr/local/bin/create_db; fi;
-if [ "$MIGRATE_ON_BOOT" = "1" ]; then bundle exec rake db:migrate; fi
-if [ "$PRECOMPILE_ON_BOOT" = "1" ]; then SKIP_EMBER_CLI_COMPILE=1 bundle exec rake assets:precompile; fi
-LD_PRELOAD=$RUBY_ALLOCATOR bundle exec config/unicorn_launcher -E production -c config/unicorn.conf.rb
+https://sglang-ascend.obs.cn-east-3.myhuaweicloud.com:443/sglang/triton_ascend-3.2.0.dev20250815-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl?AccessKeyId=HPUAXT4YM0U8JNTERLST&Expires=1789129259&Signature=hhQBNEZJTy6TQzbnc/n1T%2Bgqou8%3D
