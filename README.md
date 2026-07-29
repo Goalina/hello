@@ -1,97 +1,101 @@
-ARG CANN_VERSION=8.2.rc1
-ARG DEVICE_TYPE=910
-ARG OS=ubuntu22.04
-ARG PYTHON_VERSION=py3.11
-ARG REGISTRY=quay.io/ascend
+故障报告：triton-ascend CI 资源调度失败
 
-FROM $REGISTRY/cann:$CANN_VERSION-$DEVICE_TYPE-$OS-$PYTHON_VERSION
+一、基本信息
 
-# Update pip & apt sources
-ARG PIP_INDEX_URL="https://pypi.org/simple/"
-ARG APTMIRROR=""
-ARG MEMFABRIC_URL=https://sglang-ascend.obs.cn-east-3.myhuaweicloud.com/sglang/mf_adapter-1.0.0-cp311-cp311-linux_x86_64.whl
-ARG PYTORCH_VERSION=2.6.0
-ARG TORCHVISION_VERSION=0.21.0
-ARG PTA_URL="https://gitcode.com/Ascend/pytorch/releases/download/v7.1.0.2-pytorch2.6.0/torch_npu-2.6.0.post2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
-ARG VLLM_TAG=v0.8.5
-ARG TRITON_ASCEND_URL=https://sglang-ascend.obs.cn-east-3.myhuaweicloud.com/sglang/triton_ascend-3.2.0.dev20250729-cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl
-ARG SGLANG_TAG=main
-ARG ASCEND_CANN_PATH=/usr/local/Ascend/ascend-toolkit
-ARG SGLANG_KERNEL_NPU_TAG=main
+故障标题：triton-ascend CI 资源持续调度失败
+故障时间：2026年7月28日晚间起
+影响范围：triton-ascend 所有 CI 流水线
+故障等级：高（CI 完全不可用）
+发现方式：CI 构建任务持续 Pending，无法调度到可用节点
 
-WORKDIR /workspace
 
-# Define environments
-ENV DEBIAN_FRONTEND=noninteractive
+二、故障现象
 
-RUN pip config set global.index-url $PIP_INDEX_URL
-# APTMIRROR should be the mirror's hostname such like: mirrors.huaweicloud.com
-RUN if [ -n "$APTMIRROR" ];then sed -i "s|//.*.ubuntu.com|//$APTMIRROR|g" /etc/apt/sources.list ;fi
+- triton-ascend 的 CI 流水线任务长时间处于 Pending 状态，无法被调度到任何可用节点
+- 所有依赖 CI 资源的提交验证、PR 合入检测等流程均被阻塞
+- 开发者提交代码后无法获得 CI 反馈，影响正常开发节奏
 
-# Install development tools and utilities
-RUN apt-get update -y && apt upgrade -y && apt-get install -y \
-    build-essential \
-    cmake \
-    vim \
-    wget \
-    curl \
-    net-tools \
-    zlib1g-dev \
-    lld \
-    clang \
-    locales \
-    ccache \
-    openssl \
-    libssl-dev \
-    pkg-config \
-    ca-certificates \
-    protobuf-compiler \
-    && rm -rf /var/cache/apt/* \
-    && rm -rf /var/lib/apt/lists/* \
-    && update-ca-certificates \
-    && locale-gen en_US.UTF-8
 
-ENV LANG=en_US.UTF-8
-ENV LANGUAGE=en_US:en
-ENV LC_ALL=en_US.UTF-8
-ENV PATH="/root/.cargo/bin:${PATH}"
+三、故障影响
 
-# Install dependencies
-# TODO: install from pypi released memfabric
-RUN pip install $MEMFABRIC_URL --no-cache-dir
+1. CI 服务不可用：所有 triton-ascend CI 任务无法运行，影响代码合入流程
+2. 开发效率下降：开发者无法及时获得 CI 验证结果，阻塞开发与合入
+3. 流水线积压：待执行任务在队列中堆积，故障恢复后可能出现排队压力
 
-RUN pip install setuptools-rust wheel build --no-cache-dir
 
-# install rustup from rustup.rs
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
-    && rustc --version && cargo --version && protoc --version
+四、根因分析
 
-# Install vLLM
-RUN git clone --depth 1 https://github.com/vllm-project/vllm.git --branch $VLLM_TAG && \
-    (cd vllm && VLLM_TARGET_DEVICE="empty" pip install -v . --no-cache-dir) && rm -rf vllm
+4.1 环境背景
 
-# TODO: install from pypi released triton-ascend
-RUN pip install torch==$PYTORCH_VERSION torchvision==$TORCHVISION_VERSION --index-url https://download.pytorch.org/whl/cpu --no-cache-dir \
-    && wget ${PTA_URL} && pip install $(basename ${PTA_URL}) --no-cache-dir \
-    && python3 -m pip install --no-cache-dir attrs==24.2.0 numpy==1.26.4 scipy==1.13.1 decorator==5.1.1 psutil==6.0.0 pytest==8.3.2 pytest-xdist==3.6.1 pyyaml pybind11 \
-    && pip install ${TRITON_ASCEND_URL} --no-cache-dir
+triton-ascend 的 CI 资源接入的集群为 cn12-001，该集群共有 11 台 A3 机器作为 CI 工作节点。
 
-# Install SGLang
-RUN mkdir /workspace/sglang
-COPY . /workspace/sglang
-RUN (cd sglang/python && pip install -v .[srt_npu] --no-cache-dir) \
-    && (cd sglang/sgl-router && python -m build && pip install --force-reinstall dist/*.whl) \
-    && rm -rf sglang
+4.2 直接原因
 
-# Install Deep-ep
-# pin wheel to 0.45.1 ref: https://github.com/pypa/wheel/issues/662
-RUN pip install wheel==0.45.1 && git clone  --branch $SGLANG_KERNEL_NPU_TAG https://github.com/sgl-project/sgl-kernel-npu.git \
-    && export LD_LIBRARY_PATH=${ASCEND_CANN_PATH}/latest/runtime/lib64/stub:$LD_LIBRARY_PATH && \
-    source ${ASCEND_CANN_PATH}/set_env.sh && \
-    cd sgl-kernel-npu && \
-    bash build.sh \
-    && pip install output/deep_ep*.whl output/sgl_kernel_npu*.whl --no-cache-dir \
-    && cd .. && rm -rf sgl-kernel-npu \
-    && cd "$(pip show deep-ep | awk '/^Location:/ {print $2}')" && ln -s deep_ep/deep_ep_cpp*.so
+故障发生时，11 台 A3 机器中有 8 台被打上了 Kubernetes 污点（Taint），导致 CI Pod 无法被调度到这些节点上。剩余仅 3 台可用节点，资源严重不足，无法满足 CI 任务的调度需求。
 
-CMD ["/bin/bash"]
+4.3 根本原因
+
+集群中存在一个定时任务（CronJob），该任务的逻辑为：
+
+- 触发时间：每晚 22:30
+- 执行动作：对集群中的 A3 节点打上污点，阻止其他任务调度到这些节点
+- 设计目的：预留节点资源用于执行 nightly（夜间）测试用例，确保 nightly 用例有充足的资源运行
+
+7月28日晚 22:30 定时任务触发后，8 台机器被自动打上污点，CI 调度器无法将 Pod 调度到这些节点，导致 CI 资源几乎完全不可用。
+
+4.4 根因链路
+
+定时任务（CronJob）每晚22:30触发
+  → 对8台A3节点打上Taint
+    → CI Pod不满足Taint容忍条件，无法调度
+      → 仅剩3台可用节点，资源不足
+        → CI任务持续Pending，服务不可用
+
+
+五、时间线
+
+时间                      事件
+7月28日 22:30             定时任务触发，8台A3节点被打上污点
+7月28日晚间               CI 任务开始出现调度失败，持续 Pending
+7月28日晚间-7月29日        CI 资源持续不可用，所有流水线受阻
+待补充                    故障发现与响应时间
+待补充                    故障恢复时间
+
+
+六、修复措施
+
+6.1 临时恢复
+
+- 手动移除被污染节点的 Taint，恢复 CI 调度能力：
+  kubectl taint nodes <node-name> <taint-key>-
+- 确认 CI Pod 成功调度到恢复的节点上
+
+6.2 长期方案（建议）
+
+方案                描述                                                                优先级
+资源隔离            将 CI 资源与 nightly 资源分配到不同的节点池，避免资源争抢              高
+Toleration 配置     为 CI Pod 添加对应的 Tolerations，允许在污点节点上调度（需评估冲突）    中
+定时任务优化        调整定时任务的污点策略，仅对 nightly 专用节点打污点，而非全量节点        高
+调度策略调整        使用优先级（PriorityClass）和抢占机制，替代污点方式实现 nightly 预留     中
+监控告警            增加 CI 可用节点数的监控告警，当可用节点低于阈值时及时通知               高
+容量规划            评估 CI 和 nightly 的资源需求，确保集群总资源能满足两者并行或错峰运行    中
+
+
+七、经验教训
+
+1. 资源预留机制需精细化：使用污点做资源预留时，应明确预留范围，避免影响非目标工作负载（如 CI）的调度
+2. CI 与 nightly 资源应解耦：CI 是开发者日常依赖的核心基础设施，不应与 nightly 共用同一资源池且无隔离机制
+3. 缺乏可观测性：CI 资源可用性没有监控告警，故障发生后未能第一时间感知
+4. 定时任务变更需评估影响范围：集群级别的定时操作（如打污点）应提前评估对所有工作负载的影响，并通知相关方
+
+
+八、待办事项
+
+- [ ] 确认并补充完整的时间线（发现时间、响应时间、恢复时间）
+- [ ] 确认定时任务的具体来源（哪个团队/项目维护）
+- [ ] 评估 CI 与 nightly 的资源需求，制定资源隔离方案
+- [ ] 实施 CI 资源可用性监控告警
+- [ ] Review 定时任务的污点策略，调整影响范围
+
+报告人：待填写
+日期：2026年7月29日
