@@ -1,349 +1,190 @@
-0. [判断] 在开源社区，DCO（开发者原创声明）要求开发者在每次提交代码时通过Git命令自动添加签署标记，核心承诺是该贡献由我原创或我有权根据开源协议提交。
-[*] A. 正确
-[ ] B. 错误
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-【试题解析】：“DCO (开发者原创声明) 开发者在每次提交代码时，通过 Git 命令自动添加签署标记：$ git commit -s -m 'feat: add new feature' Signed-off-by: Name <email@example.com> 核心承诺：该贡献由我原创，或我有权根据开源协议提交。”
-
-
-1. [判断] 开源社区活动中的SIG组工作会议主要面向社区核心贡献者，以制定年度开发规划为核心目标。
-[*] A. 正确
-[ ] B. 错误
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-【试题解析】：社区技术开发组织的例行开发工作会议，围绕具体的技术方案、Roadmap、Issue/PR进行讨论和决策
-
-
-2. [判断] 开源许可证License法律上赋予用户相关权力和义务，授予用户在符合许可证条件下免费使用、修改、分发、商用等权利，包含版权授权，部分还有专利授权，也规定了用户在应用开源过程中必须履行的义务，如做出特定声明，开放特定代码等
-[*] A. 正确
-[ ] B. 错误
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-
-
-3. [判断] 开源软件使用、开发体验，直接决定用户及开发者的“第一印象”，需要支撑好用户在无人协助下自助使用，同时支撑好开发者异步、分布式协作。
-[*] A. 正确
-[ ] B. 错误
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-
-
-4. [判断] 根据人员的历史贡献，已经长期不参与社区贡献的人员也应该保留相关社区席位和决策权利。
-[ ] A. 正确
-[*] B. 错误
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：B
-【试题解析】：内外一致原则：在公司内承担项目某方面职责，应在对应的开源社区中通过投入承担同样责任，不能履职时要及时调整。
-
-
-5. [判断] 开源社区的Open Design指的是通过开放的设计确保软件规划、设计过程的透明和开放，达成社区共同认可的设计，才能打造出更好的产品，更好地满足社区用户需求。
-[*] A. 正确
-[ ] B. 错误
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-【试题解析】：Open Design（规划与设计透明）是指确保软件规划、设计过程的透明和开放，而源代码透明（Open Source）才是指软件须以开源许可证发布。题干将Open Design与Open Source的定义混淆。
-
-
-6. [判断] TC(Technical Committee)/TSC(Technical Steering Committee)通常是开源社区的最高技术组织，对社区的技术方向起到“裁判”和“领航”的作用
-[*] A. 正确
-[ ] B. 错误
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-【试题解析】：TC/TSC通常是开源社区的最高技术组织，对社区的技术方向起到“裁判”和“领航”的作用
-
-
-7. [判断] 开发者提交每一个PR时，都应当有看护质量的意识，为PR增加看护质量的用例
-[*] A. 正确
-[ ] B. 错误
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-【试题解析】：“Tips: 开发者提交每一个PR时，都应当看护的意识”。
-
-
-8. [判断] SIG（特别兴趣小组）的会议纪要可以不公开，仅限核心成员查阅。
-[ ] A. 正确
-[*] B. 错误
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：B
-【试题解析】：SIG的会议纪要公开可获得，提供便利的渠道帮助新人了解决策过程和记录。
-
-
-9. [判断] 代码的合入是开源软件开发的终点，之后用户无需关注分发渠道。
-[ ] A. 正确
-[*] B. 错误
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：B
-【试题解析】：“代码的合入不是终点，用户在熟悉的分发渠道方便自助获取、安装、使用非常重要！”。
-
-
-10. [判断] SIG是社区开发组织，一个社区的SIG数量总是越多越好。
-[ ] A. 正确
-[*] B. 错误
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：B
-【试题解析】：开源社区的组织设计建议遵循MVP够用原则，匹配“三张地图”按需设置组织
-
-
-11. [单选] 在开源版本发布过程中，关于Release Cut阶段说法正确的是
-[ ] A. Release Cut阶段合入的代码，无需反合至main分支
-[ ] B. 临时确定版本Release窗口及计划
-[*] C. 创建版本发布分支，无意外情况停止新特性开发
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：C
-【试题解析】：“Release Cut”阶段描述为：“创建新的分支，停止特性合入”。
-
-
-12. [单选] 在开源社区中，提交第一个PR时，以下哪一项不是推荐的做法？
-[ ] A. 一个PR只做一件事
-[ ] B. 写一个好的Commit Message
-[*] C. 提交一个大而全的PR
-[ ] D. 本地完成验证
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：C
-
-
-13. [单选] 在参与代码Review时，以下哪种做法是正确的？
-[*] A. 一次性指出所有问题，避免多个来回，并给出详细建议
-[ ] B. 先批评做得不好的地方，再提改进建议
-[ ] C. 只关注代码逻辑，忽略代码风格
-[ ] D. 直接指出所有问题，无需给出理由和建议
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-【试题解析】：一次性指出所有问题，避免多个来回让贡献者丧失耐心。
-
-
-14. [单选] （）负责产业内所有主导开源、参与开源的首次决策，以及开源责任主体变更决策
-[ ] A. IPMT
-[*] B. IRB
-[ ] C. OSDT
-[ ] D. SPDT
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：B
-
-
-15. [单选] 对于开源社区CI的说法，错误的是
-[ ] A. CI的代码也是开源代码的一部分
-[ ] B. CI的耗时和开发者体验息息相关
-[*] C. CI的质量和维护只是少部分人的事，与开发者无关
-[ ] D. 基础设施的CI资源和加速能力确保各种CI高效运行
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：C
-【试题解析】：CI是看护软件质量和开发者体验的关键能力
-
-
-16. [单选] 在开源社区开发与公司内开发的模式差异中，开源社区开发的特点是什么？
-[*] A. 全球化异步交流/公开记录
-[ ] B. 内部同步沟通/录屏/纪要
-[ ] C. 同步、公司内协作
-[ ] D. 满足单厂商诉求
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-【试题解析】：在“社区开发 vs 公司内开发的模式差异”对比中，开源社区开发的特点是“全球化异步交流/公开记录”。
-
-
-17. [单选] 在开源社区中，反映影响力的例子不包括以下哪项？
-[*] A. 你在公司内部的职位高低
-[ ] B. 你的Proposal能多快被接受
-[ ] C. 你的提议能获得多少支持
-[ ] D. 别人在开放性地讨论问题时能否主动cc给你征求意见
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-【试题解析】：列举的反映影响力的例子包括A、B、D选项，不包括“在公司内部的职位高低”。
-
-
-18. [单选] 有关SIG组会议描述错误的是
-[ ] A. SIG Maintainer 或 Maintainer指定的人员，提前做好轮值排班，轮流组织和主持
-[ ] B. SIG组例行会议需要固定召开时间并在社区渠道公开
-[*] C. 社区SIG组会议只允许Maintainer参与和发言
-[ ] D. 通过邮件列表、SIG微信群等渠道公开征集议题。
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：C
-【试题解析】：SIG组会议公开可参与
-
-
-19. [单选] 在开源社区中，推进Proposal的目的是什么？
-[*] A. 将单厂商需求转换为公共需求，广泛征求建议并促成共识
-[ ] B. 展现公司的技术影响力和成果
-[ ] C. 展示个人技术能力、体现个人的专业性
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-【试题解析】：“推进Proposal的本质是，将单厂商需求转换为公共需求，并促成共识的过程”。
-
-
-20. [单选] 开源社区的质量运营聚焦(__)，通过(__)牵引社区的(__)
-[*] A. 体验与软件生产过程，健康度量，持续健康发展
-[ ] B. 开发者人数，社区活动，活跃度提升
-[ ] C. 生态繁荣度，营销活动，生态繁荣度提升
-[ ] D. 社区影响力，科技外交，影响力提升
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：A
-【试题解析】：开源社区的质量运营-聚焦体验与软件生产过程，通过健康度量牵引社区持续健康发展
-
-
-21. [多选] 发布一个高质量的开源版本时，以下哪些做法是正确的？
-[*] A. 发现的错误应当先合入主干，再cherry pick到Release分支
-[*] B. 在Release Cut阶段，如无特殊情况，特性不得新增
-[*] C. 每个RC应通过社区全量测试，并广泛征求社区意见
-[ ] D. 版本一旦发布，可以进行修改并发布相同版本号的新版本来补救
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ABC
-【试题解析】：Feature Freeze后如无特殊情况特性不得新增；发现的错误应先合入主干再cherry pick到Release分支；每个RC应通过社区全量测试并征求意见。版本一旦发布，不得进行任何修改，仅能发布下一个小版本，因此C错误。
-
-
-22. [多选] 有关开源社区和社区运营描述正确的是
-[*] A. 开源社区是一个组织，由贡献者在其中通过开放透明的协作方式生产有竞争力的开源软件，供用户（开发者）使用
-[*] B. 社区的“营”通过各种方式发展社区，比如让¥变多，让品牌变响，让用户变多等等。
-[*] C. 社区的“运”主要让这个组织按照一定的规则流程运转，每个事务都有组织负责，有流程支撑，且不混乱，追求高效。
-[ ] D. 社区运营的核心诉求是”控制“
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ABC
-【试题解析】："运”让这个组织按照一定的规则流程运转，每个事务都有组织负责，有流程支撑，且不混乱，追求高效。“营”通过各种方式发展社区，比如让¥变多，让品牌变响，让用户变多等等。
-
-
-23. [多选] 以下哪些是开源社区开发与公司内开发的模式差异？
-[*] A. 公司内开发是同步、公司内协作为主
-[*] B. 公司内开发满足单厂商诉求/内部
-[*] C. 开源社区开发是异步、分布式协作
-[*] D. 开源社区开发满足多厂商共识/公开
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ABCD
-【试题解析】：通过对比图明确列出了这些差异：开源社区开发是异步、分布式协作，多厂商共识/公开；公司内开发是同步、公司内协作，满足单厂商诉求/内部。
-
-
-24. [多选] 开源社区中TC（Technical Committee）和TSC（Technical Steering Committee）的典型职责包括哪些？
-[*] A. 负责技术争议仲裁
-[*] B. 负责技术决策、SIG成立和撤销
-[*] C. 负责架构演进、技术方向制定
-[*] D. 负责跨社区技术协调
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ABCD
-【试题解析】：TC的典型职责包括技术决策、SIG成立和撤销、版本发布、争议仲裁；TSC的典型职责包括技术方向制定、跨社区技术协调、架构演进方向指导。
-
-
-25. [多选] 关于社区伙伴地图描述正确的是
-[*] A. 掌握伙伴投入这些方向的原因及现状和结果是否符合预期
-[ ] B. 核心是对谁能参与社区贡献进行控制
-[*] C. 洞察参与到社区各开发组织的企业以及它们所投入的技术方向
-[*] D. 目的是识别潜在伙伴的技术关注点
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ACD
-【试题解析】：伙伴地图以识别伙伴和牵引贡献为核心目标
-
-
-26. [多选] 高质量的参与代码Review时，审查者应该怎么做？
-[*] A. 一次性指出所有问题，避免多个来回
-[*] B. 先肯定做得好的地方，再提改进建议
-[ ] C. 只指出问题，不提供具体替代方案
-[*] D. 复杂代码不妨checkout到本地进行review
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ABD
-【试题解析】：先肯定做得好的地方，再提改进建议；一次性指出所有问题，避免多个来回；复杂代码不妨checkout到本地进行review。同时要求给出理由和具体替代方案，而不只是说“不好”，因此C错误。
-
-
-27. [多选] 开源社区的组织设计应遵循哪些原则？
-[*] A. MVP够用原则
-[*] B. 人员能力匹配原则
-[*] C. 内外一致原则
-[ ] D. 规模最大化原则
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ABC
-【试题解析】：开源社区的组织设计建议遵循MVP够用原则、人员能力匹配原则、内外一致原则。
-
-
-28. [多选] 下列选项中，关于开源软件分发说法正确的是：
-[ ] A. 为提升开发者效率，建议使用手动出包的方式，达到快速出包的目的
-[*] B. 提供OS包、PyPi等软件包，以方便用户在熟悉的主流渠道获取、安装软件，提升体验
-[*] C. 软件发布的过程中，建议自动化进行软件包生成并通过自动化测试保证软件包质量。
-[ ] D. 软件只需要发布源码，够用即可，用户用的时候现编译安装即可
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：BC
-【试题解析】：代码合入不是终点，软件分发需要做好格式x渠道，以提升用户易用性
-
-
-29. [多选] 写好开源社区文档时，以下哪些描述是不正确的？
-[*] A. 在快速开始的文档中，应该详细列出所有异常，确保万无一失
-[*] B. 在用户文档中，包含大量的设计细节，帮助开发者理解
-[*] C. 快速开始的文档中的命令只是示范，无需真实验证
-[ ] D. 文档是软件的一部分，开发者应当像重视代码一样重视文档
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ABC
-
-
-30. [多选] 以下哪些是有助于成为开源社区maintainer的贡献？
-[*] A. 大粒度的代码贡献、高质量且活跃的代码Review、持续且活跃的社区
-[*] B. 帮助完善社区的CI/CD，工具链，参与社区的release team
-[ ] C. 成为maintainer就是要多贡献代码，其他社区工作不是成为maintainer的关键
-[*] D. 通过扩大受众，用户群体的影响力，帮助开源软件发展用户和开发者
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ABD
-
-
-31. [多选] 在提交一个PR时，以下哪些做法是正确的？
-[*] A. 一个PR只做一件事，小而聚焦
-[*] B. 为代码写好UT、测试，本地完成验证和Lint
-[ ] C. 完成开发后无需测试，尽快提交PR到社区，查看CI结果
-[*] D. 每个PR都应该包含单元测试和端到端测试
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ABD
-【试题解析】：一个PR只做一件事，小而聚焦；为代码写好UT、测试，本地完成验证和Lint；每个PR都应包含单元测试和端到端测试。同时指出不建议force push覆盖，应保持历史commits。
-
-
-32. [多选] 以下那些可能是License中会包含的内容
-[*] A. License定义
-[*] B. 免责说明
-[*] C. 对再次分发的说明
-[*] D. 授予版权/专利
-[ ] E. 缺陷修复担保与服务等级协议（SLA）
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ABCD
-
-
-33. [多选] 在设计代码仓的PR级CI时，以下哪些动作对开发者质量和效率有帮助：
-[ ] A. 尽可能多的添加用例
-[*] B. 添加lint
-[*] C. 添加文档测试
-[*] D. 通过精准测试，用例并行等手段优化CI耗时
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：BCD
-【试题解析】：软件生产能力覆盖CLA（贡献者协议），代码评审，CI，构建与测试，漏洞管理等能力。
-
-
-34. [多选] 来自OpenInfra社区的四个Open具体指什么？
-[ ] A. Open Business Model
-[*] B. Open Community
-[*] C. Open Design
-[*] D. Open Development
-[*] E. Open Source
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：BCDE
-【试题解析】：开源社区的4个透明：源代码透明、规划与设计透明、开发过程透明、开源社区透明。商业模式透明不在其中。
-
-
-35. [多选] 有关开源社区的组织设置错误的是
-[*] A. 不同治理模式之间不能切换。
-[*] B. 社区组织不宜经常变化，因此要追求一步到位。
-[ ] C. 精简、高效、开放的社区组织，是社区可持续发展的基石。
-[ ] D. 组织设置需要基于治理模式兼顾效率、开放和自治之间的平衡。
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：AB
-【试题解析】：匹配业务特点、发展阶段、开源理念，选择最为高效的治理模式，确保社区长期稳定发展。不同治理模式之间可根据需求切换。
-
-
-36. [多选] 开源社区基础设施面向开源社区各种用户，提供以下能力：
-[*] A. 用户服务：服务开源软件的用户，提供一流的网站主页，下载，文档，交流体验
-[*] B. 社区运作：社区运营和管理人员如何对人/事/物进行管理，支撑开源社区各类活动如会议，SIG运作治理和看板等
-[*] C. 软件生产：让开发者在社区高效开发，覆盖CLA（贡献者协议），代码评审，CI，构建与测试，漏洞管理等能力
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ABC
-
-
-37. [多选] SIG（特别兴趣小组）的健康运作需要哪些条件？
-[*] A. 开放的参与机制
-[ ] B. 快速但封闭的决策过程
-[*] C. 明确的目标和范围
-[*] D. 透明的工作流程
-【试题来源】：计算人人懂开源综合考试
-【正确答案】：ACD
-【试题解析】：SIG的健康运作需要明确的目标和范围、开放的参与机制、透明的工作流程。
-
-
+/root/.cache/.cache/npu-pkgs/torch_memory_saver-0.0.8-cp311-cp311-linux_aarch64.whl
+/root/.cache/huggingface/hub/models--Skywork--Skywork-Reward-Llama-3.1-8B-v0.2/snapshots/d4117fbfd81b72f41b96341238baa1e3e90a4ce1
+/root/.cache/modelscope/hub/datasets/grade_school_math/test.jsonl
+/root/.cache/modelscope/hub/datasets/grade_school_math/train.jsonl
+/root/.cache/modelscope/hub/datasets/hellaswag_val.jsonl
+/root/.cache/modelscope/hub/datasets/images/023.jpg
+/root/.cache/modelscope/hub/datasets/images/1x1.png
+/root/.cache/modelscope/hub/datasets/images/example_image.png
+/root/.cache/modelscope/hub/datasets/images/invoice_with_barcode_logo.jpeg
+/root/.cache/modelscope/hub/datasets/images/logo.png
+/root/.cache/modelscope/hub/datasets/images/man.png
+/root/.cache/modelscope/hub/datasets/images/man_ironing_on_back_of_suv.png
+/root/.cache/modelscope/hub/datasets/images/sgl_logo.png
+/root/.cache/modelscope/hub/datasets/otavia/ShareGPT_Vicuna_unfiltered/ShareGPT_V3_unfiltered_cleaned_split.json
+/root/.cache/modelscope/hub/datasets/tmp/test.jsonl
+/root/.cache/modelscope/hub/datasets/video/audios_bird_song.mp3
+/root/.cache/modelscope/hub/datasets/video/audios_Trump_WEF_2018_10s.mp3
+/root/.cache/modelscope/hub/datasets/video/jobs.mp4
+/root/.cache/modelscope/hub/datasets/video/jobs_presenting_ipod.mp4
+/root/.cache/modelscope/hub/datasets/wav/asr_en.wav
+/root/.cache/modelscope/hub/models/AI-ModelScope/clip-vit-large-patch14-336
+/root/.cache/modelscope/hub/models/AI-ModelScope/dbrx-instruct
+/root/.cache/modelscope/hub/models/AI-ModelScope/Llama-3.1-8B-Instruct
+/root/.cache/modelscope/hub/models/AI-ModelScope/llava-v1.6-34b
+/root/.cache/modelscope/hub/models/AI-ModelScope/llava-v1.6-34b/llava-1.6v-34b-tokenizer
+/root/.cache/modelscope/hub/models/AI-ModelScope/Skywork-Reward-Gemma-2-27B-v0.2
+/root/.cache/modelscope/hub/models/aleoyang/Qwen3-32B-w8a8-MindIE
+/root/.cache/modelscope/hub/models/Alibaba-NLP/gme-Qwen2-VL-2B-Instruct
+/root/.cache/modelscope/hub/models/allenai/OLMo-2-1124-7B-Instruct
+/root/.cache/modelscope/hub/models/allenai/OLMoE-1B-7B-0924
+/root/.cache/modelscope/hub/models/AngelSlim/Qwen3-14B_eagle3
+/root/.cache/modelscope/hub/models/arcee-ai/AFM-4.5B-Base
+/root/.cache/modelscope/hub/models/arcee-ai/Trinity-Mini
+/root/.cache/modelscope/hub/models/BAAI/bge-reranker-v2-m3
+/root/.cache/modelscope/hub/models/baichuan-inc/Baichuan2-13B-Chat
+/root/.cache/modelscope/hub/models/baidu/ERNIE-4.5-21B-A3B-PT
+/root/.cache/modelscope/hub/models/bge-large-en-v1.5
+/root/.cache/modelscope/hub/models/bigcode/starcoder2-7b
+/root/.cache/modelscope/hub/models/codelion/Llama-3.2-1B-Instruct-tool-calling-lora
+/root/.cache/modelscope/hub/models/CohereForAI/c4ai-command-r-v01
+/root/.cache/modelscope/hub/models/cyankiwi/MiniMax-M2-BF16
+/root/.cache/modelscope/hub/models/deepseek-ai/deepseek-coder-1.3b-base
+/root/.cache/modelscope/hub/models/deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct
+/root/.cache/modelscope/hub/models/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
+/root/.cache/modelscope/hub/models/deepseek-ai/deepseek-vl2
+/root/.cache/modelscope/hub/models/deepseek-ai/Janus-Pro-1B
+/root/.cache/modelscope/hub/models/deepseek-ai/Janus-Pro-7B
+/root/.cache/modelscope/hub/models/DeepSeek-R1-0528-w4a8-per-channel
+/root/.cache/modelscope/hub/models/DeepSeek-V3.2-Exp-W8A8
+/root/.cache/modelscope/hub/models/Eco-Tech/DeepSeek-V4-Flash-w8a8-mtp
+/root/.cache/modelscope/hub/models/Eco-Tech/GLM-5.1-w4a8
+/root/.cache/modelscope/hub/models/Eco-Tech/Kimi-K2.5-w4a8
+/root/.cache/modelscope/hub/models/Eco-Tech/Kimi-K2.6-w4a8
+/root/.cache/modelscope/hub/models/Eco-Tech/MiniMax-M2.5-w8a8-QuaRot
+/root/.cache/modelscope/hub/models/Eco-Tech/Qwen3.5-27B-W8A8
+/root/.cache/modelscope/hub/models/Eco-Tech/Qwen3.5-35B-A3B-w8a8-mtp
+/root/.cache/modelscope/hub/models/Eco-Tech/Qwen3.5-397B-A17B-w4a8-mtp
+/root/.cache/modelscope/hub/models/Eco-Tech/Qwen3.5-397B-A17B-w8a8-mtp
+/root/.cache/modelscope/hub/models/Eco-Tech/Qwen3.6-27B-w8a8
+/root/.cache/modelscope/hub/models/Eco-Tech/Qwen3-30B-A3B-w4a4-LAOS
+/root/.cache/modelscope/hub/models/Eco-Tech/Qwen3-32B-w4a4-LAOS
+/root/.cache/modelscope/hub/models/eigen-ai-labs/gpt-oss-120b-bf16
+/root/.cache/modelscope/hub/models/EleutherAI/gpt-j-6b
+/root/.cache/modelscope/hub/models/FLM/Tele-FLM
+/root/.cache/modelscope/hub/models/GLM-4.6-w8a8_WITH_MTP
+/root/.cache/modelscope/hub/models/google/gemma-3-4b-it
+/root/.cache/modelscope/hub/models/hot_map/235B_3_5k_decode.pt
+/root/.cache/modelscope/hub/models/hotdogs/qwen3.6-27b-cybersecurity-lora
+/root/.cache/modelscope/hub/models/Howeee/DeepSeek-R1-0528-w8a8
+/root/.cache/modelscope/hub/models/Howeee/persimmon-8b-chat
+/root/.cache/modelscope/hub/models/Howeee/Qwen2.5-1.5B-apeach
+/root/.cache/modelscope/hub/models/HuggingFaceTB/SmolLM-1.7B
+/root/.cache/modelscope/hub/models/huihui-ai/grok-2
+/root/.cache/modelscope/hub/models/huihui-ai/grok-2/tokenizer.tok.json
+/root/.cache/modelscope/hub/models/ibm-granite/granite-3.0-3b-a800m-instruct
+/root/.cache/modelscope/hub/models/ibm-granite/granite-3.1-8b-instruct
+/root/.cache/modelscope/hub/models/iic/gte_Qwen2-1.5B-instruct
+/root/.cache/modelscope/hub/models/inclusionAI/Ling-lite
+/root/.cache/modelscope/hub/models/inclusionAI/LLaDA2.0-flash
+/root/.cache/modelscope/hub/models/inclusionAI/LLaDA2.0-mini
+/root/.cache/modelscope/hub/models/Intel/Qwen3-30B-A3B-Instruct-2507-int4-AutoRound
+/root/.cache/modelscope/hub/models/Intel/Qwen3-8B-int4-AutoRound
+/root/.cache/modelscope/hub/models/intfloat/e5-mistral-7b-instruct
+/root/.cache/modelscope/hub/models/iridiumine/MiMo-V2-Flash-W8A8
+/root/.cache/modelscope/hub/models/JetLM/SDAR-30B-A3B-Chat
+/root/.cache/modelscope/hub/models/JetLM/SDAR-8B-Chat
+/root/.cache/modelscope/hub/models/Kimi/Kimi-K2-Thinking
+/root/.cache/modelscope/hub/models/LGAI-EXAONE/EXAONE-3.5-7.8B-Instruct
+/root/.cache/modelscope/hub/models/lightseekorg/kimi-k2.5-eagle3
+/root/.cache/modelscope/hub/models/lightseekorg/kimi-k2.6-eagle3
+/root/.cache/modelscope/hub/models/LLM-Research/Llama-3.2-11B-Vision-Instruct
+/root/.cache/modelscope/hub/models/LLM-Research/Llama-3.2-1B
+/root/.cache/modelscope/hub/models/LLM-Research/Llama-3.2-1B-Instruct
+/root/.cache/modelscope/hub/models/LLM-Research/Meta-Llama-3.1-8B-Instruct
+/root/.cache/modelscope/hub/models/LLM-Research/Meta-Llama-3-8B-Instruct
+/root/.cache/modelscope/hub/models/lmms-lab/llava-next-72b
+/root/.cache/modelscope/hub/models/lmms-lab/llava-onevision-qwen2-7b-ov
+/root/.cache/modelscope/hub/models/lmsys/sglang-EAGLE-LLaMA3-Instruct-8B
+/root/.cache/modelscope/hub/models/meta-llama/Llama-4-Scout-17B-16E-Instruct
+/root/.cache/modelscope/hub/models/microsoft/Phi-4-multimodal-instruct
+/root/.cache/modelscope/hub/models/mistralai/Mistral-7B-Instruct-v0.2
+/root/.cache/modelscope/hub/models/mistralai/Mistral-Small-3.1-24B-Instruct-2503
+/root/.cache/modelscope/hub/models/moonshotai/Kimi-VL-A3B-Instruct
+/root/.cache/modelscope/hub/models/openai/whisper-large-v3
+/root/.cache/modelscope/hub/models/OpenBMB/MiniCPM3-4B
+/root/.cache/modelscope/hub/models/openbmb/MiniCPM-o-2_6
+/root/.cache/modelscope/hub/models/openbmb/MiniCPM-V-2_6
+/root/.cache/modelscope/hub/models/OrionStarAI/Orion-14B-Base
+/root/.cache/modelscope/hub/models/Qwen/Eagle3-Qwen3-8B-zh
+/root/.cache/modelscope/hub/models/Qwen/gte-Qwen2-1.5B-instruct
+/root/.cache/modelscope/hub/models/Qwen/Qwen2.5-7B-Instruct
+/root/.cache/modelscope/hub/models/Qwen/Qwen2.5-Math-RM-72B
+/root/.cache/modelscope/hub/models/Qwen/Qwen2.5-VL-3B-Instruct
+/root/.cache/modelscope/hub/models/Qwen/Qwen2.5-VL-72B-Instruct
+/root/.cache/modelscope/hub/models/Qwen/Qwen2.5-VL-72B-Instruct-w8a8
+/root/.cache/modelscope/hub/models/Qwen/Qwen2-0.5B-Instruct
+/root/.cache/modelscope/hub/models/Qwen/Qwen2-VL-2B-Instruct
+/root/.cache/modelscope/hub/models/Qwen/Qwen3.5-27B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3.5-35B-A3B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3.5-9B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3.6-27B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3.6-35B-A3B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-0.6B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-1.7B-GPTQ-Int8
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-14B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-14B-Lora/Qwen3-14B_lora
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-14B-W8A8-Dynamic2
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-235B-A22B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-235B-A22B-Eagle3
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-30B-A3B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-30B-A3B-GGUF/Qwen3-30B-A3B-Q4_K_M.gguf
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-30B-A3B-GPTQ-Int4
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-30B-A3B-Instruct-2507
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-30B-A3B-Instruct-2507-theo-style-lora
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-30B-A3B-w8a8
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-32B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-4B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-4B-GGUF/Qwen3-4B-Q4_K_M.gguf
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-4B-lora-v2
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-4B-LoRA-ZH-WebNovelty-v0.0
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-8B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-8B_eagle3
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-8B-W8A8
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-a3B_eagle3
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-ASR-0.6B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-Coder-Next-W8A8
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-Embedding-8B
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-Next-80B-A3B-Instruct
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-Omni-30B-A3B-Thinking
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-VL-235B-A22B-Instruct
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-VL-30B-A3B-Instruct
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-VL-30B-A3B-Thinking
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-VL-4B-Instruct
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-VL-8B-Instruct
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-VL-8B-Instruct-Eagle3
+/root/.cache/modelscope/hub/models/Qwen/Qwen3-VL-8B-Thinking
+/root/.cache/modelscope/hub/models/Qwen3-Coder-480B-A35B-Instruct-w8a8-QuaRot
+/root/.cache/modelscope/hub/models/rednote-hilab/dots.ocr
+/root/.cache/modelscope/hub/models/sglang-EAGLE3-LLaMA3.1-Instruct-8B
+/root/.cache/modelscope/hub/models/sgl-npu/MiniMax-M2.5-eagel-model-0318
+/root/.cache/modelscope/hub/models/Shanghai_AI_Laboratory/internlm2-7b
+/root/.cache/modelscope/hub/models/Shanghai_AI_Laboratory/internlm2-7b-reward
+/root/.cache/modelscope/hub/models/stabilityai/stablelm-2-1_6b
+/root/.cache/modelscope/hub/models/stepfun-ai/Step3-VL-10B
+/root/.cache/modelscope/hub/models/suayptalha/FastLlama-3.2-LoRA
+/root/.cache/modelscope/hub/models/upstage/SOLAR-10.7B-Instruct-v1.0
+/root/.cache/modelscope/hub/models/vllm-ascend/DeepSeek-R1-0528-W8A8
+/root/.cache/modelscope/hub/models/vllm-ascend/DeepSeek-V2-Lite-W8A8
+/root/.cache/modelscope/hub/models/vllm-ascend/DeepSeek-V3.2-W8A8
+/root/.cache/modelscope/hub/models/vllm-ascend/Qwen3-235B-A22B-W8A8
+/root/.cache/modelscope/hub/models/vllm-ascend/Qwen3-30B-A3B-W8A8
+/root/.cache/modelscope/hub/models/vllm-ascend/Qwen3-Next-80B-A3B-Instruct-W8A8
+/root/.cache/modelscope/hub/models/vllm-ascend/QWQ-32B-W8A8
+/root/.cache/modelscope/hub/models/XiaomiMiMo/MiMo-7B-RL
+/root/.cache/modelscope/hub/models/XiaomiMiMo/MiMo-VL-7B-RL
+/root/.cache/modelscope/hub/models/xverse/XVERSE-MoE-A36B
+/root/.cache/modelscope/hub/models/YZY/Qwen3-8B
+/root/.cache/modelscope/hub/models/YZY/Qwen3-8B_eagle3
+/root/.cache/modelscope/hub/models/zcgy26/Qwen3-235B-A22B-Instruct-2507-w8a8
+/root/.cache/modelscope/hub/models/ZhipuAI/chatglm2-6b
+/root/.cache/modelscope/hub/models/ZhipuAI/GLM-4.5V
+/root/.cache/modelscope/hub/models/ZhipuAI/GLM-4.6V-Flash
+/root/.cache/modelscope/hub/models/ZhipuAI/GLM-4.7-Flash
+/root/.cache/modelscope/hub/models/ZhipuAI/glm-4-9b-chat
+/root/.cache/modelscope/hub/models/Zjcxy-SmartAI/Eagle3-Qwen3-32B-zh
+/root/.cache/modelscope/hub/models/z-lab/Qwen3-8B-DFlash-b16
+/root/.cache/sglang/FR-Spec/freq_32768.pt
+/root/.cache/sglang/hot_map/expert_distribution_recorder.json
+/root/.cache/sglang/hot_map/expert_distribution_recorder.pt
+/root/.cache/sglang/hot_map/qwen3_30b_a3b_random_no_redundant.json
