@@ -1,128 +1,79 @@
-# 错误报告：vllm-deepseek-v3-1-bf16-efe9f2 Pod CrashLoopBackOff
+# Nightly 测试近期故障说明
 
-**简要结论**：CI 今天构建了一个新版本的镜像，镜像内 CANN 从 9.0.1 升级到了 9.1.0，但测试启动脚本里某个路径还写着旧版本号 `cann-9.0.1`，Pod 一启动就找不到这个路径，直接崩溃退出。
-
----
-
-## 一、现象
-
-```
-vllm-project   vllm-deepseek-v3-1-bf16-efe9f2-0     0/1   CrashLoopBackOff   4 (17s ago)   4m14s
-vllm-project   vllm-deepseek-v3-1-bf16-efe9f2-0-1   0/1   CrashLoopBackOff   4 (25s ago)   4m14s
-```
-
-多机测试的 Leader 和 Worker 两个 Pod 均处于 CrashLoopBackOff 状态（即反复启动、崩溃、重启的死循环），退出码为 1。
+近期 Nightly 测试连续出现三次故障，以下逐一说明原因及分类。
 
 ---
 
-## 二、报错信息
+## 故障一：7月30日 — 代码问题 + 测试框架缺陷
 
-从 Pod 日志中拿到的唯一一行报错：
+**问题类型**：业务代码问题 + 测试框架问题
 
-```
-/root/.cache/tests/run.sh: line 27: /usr/local/Ascend/cann-9.0.1/share/info/ascendnpu-ir/bin/set_env.sh: No such file or directory
-```
+**现象**：夜间 Nightly 用例触发时资源不足，任务超时报错。
 
-意思是：启动脚本 `run.sh` 执行到第 27 行时，试图加载一个文件，但这个文件不存在。
+**影响范围**：
+- multi-node (releases-v0.24.0rc, multi-node-deepseek-v3.1, DeepSeek-V3.1-BF16.yaml, 2) / DeepSeek-V3.1-BF16.yaml
+- double-node (releases-v0.24.0rc, multi-node-deepseek-r1-w8a8-longseq, DeepSeek-R1-W8A8-longseq.yaml) / DeepSeek-R1-W8A8-longseq.yaml
+- double-node (releases-v0.24.0rc, multi-node-qwen-disagg-pd, Qwen3-235B-disagg-pd.yaml, 2) / Qwen3-235B-disagg-pd.yaml
 
----
+共 3 个多机任务失败。
 
-## 三、根因分析
+**原因**：
+- main 分支合入了存在问题的代码，导致 e2e 测试任务长时间挂死无法退出；
+- 测试框架未对 e2e 测试设置超时时间，挂死的任务持续占用测试资源，无法自动释放；
+- 夜间 Nightly 触发时，资源已被耗尽，新任务无法获取足够资源，最终超时报错。
 
-### 背景：多机测试的运行方式
-
-多机测试用 Kubernetes 拉起多个 Pod，每个 Pod 启动时执行同一个 shell 脚本 `run.sh`，这个脚本负责配置环境变量、克隆代码、拉起 vLLM 服务、执行测试。
-
-`run.sh` 并不是打包在镜像里的，而是由 CI workflow 在每次测试前从代码仓库复制到一块共享存储（PVC）上，Pod 启动时从共享存储里读取并执行。
-
-整个流程如下：
-
-```
-CI workflow 启动
-  │
-  ├─ [第1步] 构建新镜像，推送到镜像仓库
-  │
-  ├─ [第2步] 从代码仓库把 run.sh 复制到共享存储
-  │           install -D tests/.../run.sh → /root/.cache/tests/run.sh
-  │
-  ├─ [第3步] 用新镜像拉起多个 Pod（LeaderWorkerSet）
-  │           Pod 启动命令：bash /root/.cache/tests/run.sh
-  │
-  └─ [第4步] Pod 执行 run.sh，配置环境、跑测试
-```
-
-### 问题所在：run.sh 里有一个写死的旧版本路径
-
-`run.sh` 第 26～27 行负责加载 CANN 和 ascendnpu-ir 的环境变量：
-
-```bash
-# 第26行：加载 CANN 环境变量（这行没问题）
-source /usr/local/Ascend/ascend-toolkit/set_env.sh
-
-# 第27行：加载 ascendnpu-ir 环境变量（这行有问题）
-source /usr/local/Ascend/cann-9.0.1/share/info/ascendnpu-ir/bin/set_env.sh
-```
-
-第 27 行把 CANN 的版本号 `9.0.1` **写死**在了路径里。
-
-### 问题触发：今天构建的新镜像里只有 cann-9.1.0
-
-今天（2026-08-04 16:52 UTC）CI 构建了新的测试镜像，CANN 从 9.0.1 升级到了 9.1.0：
-
-```
-镜像：swr.cn-southwest-2.myhuaweicloud.com/base_image/ascend-ci/vllm-ascend:nightly-ci-main-a3
-构建时间：2026-08-04T16:52:08Z
-CANN_VERSION=9.1.0
-ASCEND_TOOLKIT_HOME=/usr/local/Ascend/cann-9.1.0   ← 已经是 9.1.0
-```
-
-在本地实际检查镜像内容，确认：
-- `/usr/local/Ascend/cann-9.1.0/` ✅ 存在
-- `/usr/local/Ascend/cann-9.0.1/` ❌ 不存在（整个目录都没有）
-
-`run.sh` 脚本开头有 `set -euo pipefail`，这意味着任何命令失败都会立即终止脚本。第 27 行执行失败后脚本直接退出，Pod 随之终止，Kubernetes 不断重启，形成 CrashLoopBackOff。
-
-### 完整崩溃链路
-
-```
-镜像升级：CANN 9.0.1 → 9.1.0（今天新构建）
-          ↓
-Pod 启动，执行 bash /root/.cache/tests/run.sh
-          ↓
-run.sh 第27行：source .../cann-9.0.1/...
-          ↓
-cann-9.0.1 目录不存在 → 命令失败
-          ↓
-set -euo pipefail → 脚本立即退出，exit code 1
-          ↓
-Pod 退出 → Kubernetes 重启 → 再次崩溃 → CrashLoopBackOff
-```
+**现状**：
+1. 已为 e2e 测试添加超时时间限制（120min）；
+2. 问题代码修复中。
 
 ---
 
-## 四、影响范围
+## 故障二：8月4日 — 基础设施问题
 
-本次 CI run 中所有使用 `nightly-ci-main-a3` 镜像的多机测试均受影响：
-- multi-node-deepseek-v3.1（DeepSeek-V3.1-BF16.yaml）
-- multi-node-deepseek-v3.2-W8A8-EP（DeepSeek-V3_2-W8A8-EP.yaml）
-- multi-node-GLM-5.2-w8a8-A3（GLM5_2-W8A8-A3-dual-nodes.yaml）
+**问题类型**：基础设施问题
+
+**现象**：部分任务报错 `line 1: npu-smi: command not found`。
+
+**影响范围**：
+- single-node (releases-v0.23.0, qwen3-vl-235b-a22b-instruct-w8a8, linux-aarch64-nightly-a3-16) / qwen3-vl-235b-a22b-instruct-w8a8
+- single-node (releases-v0.23.0, deepseek-r1-0528-w8a8, linux-aarch64-nightly-a3-16) / deepseek-r1-0528-w8a8
+
+共 2 个单机任务失败。
+
+**原因**：
+- 节点 `172.22.5.24` 发生掉卡故障，经修复重启后，NPU 驱动挂载出现异常；
+- 驱动异常导致 `npu-smi info` 命令无法正常执行，测试任务报错退出。
+
+**现状**：8/4 当日已修复。
 
 ---
 
-## 五、修复建议
+## 故障三：8月5日 — 镜像版本升级与脚本未同步
 
-**根本修复**：修改 `tests/e2e/nightly/multi_node/scripts/run.sh` 第 27 行，去掉硬编码的版本号，改用镜像中已有的环境变量 `CANN_VERSION`：
+**问题类型**：CI代码问题
 
-```bash
-# 修改前
-source /usr/local/Ascend/cann-9.0.1/share/info/ascendnpu-ir/bin/set_env.sh
+**现象**：多机测试所有 Pod 启动即崩溃（CrashLoopBackOff）。
 
-# 修改后
-source /usr/local/Ascend/${CANN_VERSION}/share/info/ascendnpu-ir/bin/set_env.sh
-```
+**影响范围**：
+- multi-node (main, multi-node-deepseek-v3.1, DeepSeek-V3.1-BF16.yaml, 2) / DeepSeek-V3.1-BF16.yaml
+- multi-node (main, multi-node-deepseek-v3.2-W8A8-EP, DeepSeek-V3_2-W8A8-EP.yaml, 4) / DeepSeek-V3_2-W8A8-EP.yaml
+- multi-node (main, multi-node-GLM-5.2-w8a8-A3, GLM5_2-W8A8-A3-dual-nodes.yaml, 2) / GLM5_2-W8A8-A3-dual-nodes.yaml
+- double-node (main, multi-node-dpsk3.2-2node, DeepSeek-V3_2-W8A8-A3-dual-nodes.yaml, 2) / DeepSeek-V3_2-W8A8-A3-dual-nodes.yaml
+- double-node (main, multi-node-qwen3-dp, Qwen3-235B-A22B.yaml, 2) / Qwen3-235B-A22B.yaml
+- double-node (main, multi-node-GLM-5.1-w8a8-A3, GLM5_1-W8A8-A3-dual-nodes.yaml, 2) / GLM5_1-W8A8-A3-dual-nodes.yaml
+- double-node (main, multi-node-qwen-disagg-pd, Qwen3-235B-disagg-pd.yaml, 2) / Qwen3-235B-disagg-pd.yaml
+- double-node (main, multi-node-qwen-vl-disagg-pd, Qwen3-VL-235B-disagg-pd.yaml, 2) / Qwen3-VL-235B-disagg-pd.yaml
+- double-node (main, multi-node-qwenw8a8-2node-eplb, Qwen3-235B-W8A8-EPLB.yaml, 2) / Qwen3-235B-W8A8-EPLB.yaml
 
-镜像里已通过 `ENV CANN_VERSION=9.1.0` 注入了版本号，使用该变量后，后续镜像升级 CANN 版本时脚本无需再做任何修改。
+共 9 个多机任务全部失败。
 
-**临时修复**：若需要立即恢复 CI，可将第 27 行的 `cann-9.0.1` 直接改为 `cann-9.1.0`，但这只是推后了下一次同样问题出现的时间。
+**原因**：
+- PR #13480 将镜像构建依赖的 CANN 底包版本从 9.0.1 升级至 9.1.0；
+- 多机测试的启动脚本 `run.sh`（`tests/e2e/nightly/multi_node/scripts/run.sh`）第 27 行将 CANN 版本号硬编码在路径中，未随镜像同步更新：
+  ```bash
+  source /usr/local/Ascend/cann-9.0.1/share/info/ascendnpu-ir/bin/set_env.sh
+  ```
+- 新镜像中只有 `cann-9.1.0` 目录，`cann-9.0.1` 完全不存在，脚本执行到该行时报错退出，触发 CrashLoopBackOff。
 
-**附加建议**：在镜像构建 workflow 完成后、触发测试之前，增加一个验证步骤，检查 `run.sh` 中所有 `source` 的路径在新镜像内均存在，从流程上杜绝此类镜像与脚本版本脱节的问题。
+**现状**：测试框架代码待修正。
+---
