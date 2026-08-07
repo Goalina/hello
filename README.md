@@ -23,7 +23,7 @@ Error: Failed to resolve action download info.
 
 GitHub Actions 服务在 2026年8月6日17:02 UTC 开始发生故障，导致 runner 无法从 GitHub API 下载 action 元信息（如 `actions/github-script@v9`）。
 
-github官方原故障通报可见
+github官方原故障通报可见 https://www.githubstatus.com/
 
 ## 时间线
 
