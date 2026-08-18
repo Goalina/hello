@@ -1,317 +1,37 @@
-# A2 CI 模型保护清单（临时）
-
-> 生成时间：2026-08-13  
-> 仓库版本：`main@27bc2b451`  
-> 用途：清理 A2 runner 的模型缓存前，确认哪些目录不能删除。
-
-## 结论
-
-- 本仓库 A2 CI **直接、明确依赖 70 个唯一模型/LoRA/Speculative 模型**。
-- A2 同时执行 vLLM 上游 `v0.26.0` 测试；上游套件源码中另有 **178 个模型仓库静态引用候选**。
-- 两部分有 16 个重复项，保守保护集合总计 **232 个唯一仓库 ID**。
-- 清理时应至少完整保留“本仓库直接依赖”部分。若要保证上游 A2 CI 离线测试也不受影响，则下方“上游套件候选”中**当前已存在于 A2 缓存的目录也全部保留**。
-
-常见缓存目录映射：
-
-- ModelScope：`/root/.cache/modelscope/hub/models/<组织>/<仓库>`
-- Hugging Face：`/root/.cache/huggingface/hub/models--<组织>--<仓库>`
-- 实际 runner 若把 `/root/.cache` 挂载到共享盘，应按共享盘中的对应目录保护。
-
-## 本仓库 A2 CI 直接依赖（70 个，必须保留）
-
-### Nightly 功能/性能测试（12 个）
-
-| 模型仓库 ID | 用途 |
-| --- | --- |
-| `Eco-Tech/Qwen3-VL-32B-Instruct-w8a8-QuaRot` | 单机 nightly |
-| `vllm-ascend/Qwen3-32B-W8A8` | 单机 nightly |
-| `Eco-Tech/Qwen3.5-27B-w8a8-mtp` | 单机 nightly |
-| `Eco-Tech/Qwen3.5-397B-A17B-w4a8-mtp` | 单机 nightly |
-| `google/gemma-4-26B-A4B-it` | 单机 nightly |
-| `google/gemma-4-31B-it` | 单机 nightly |
-| `Eco-Tech/MiniMax-M2.5-w8a8-QuaRot` | 单机 nightly 主模型 |
-| `vllm-ascend/MiniMax-M2.5-eagle-model-0318` | 单机 nightly draft 模型 |
-| `Qwen/Qwen3-235B-A22B` | 双机 nightly |
-| `Eco-Tech/GLM-5.1-w8a8` | 双机 nightly |
-| `Eco-Tech/Kimi-K2.5-W4A8` | 双机 nightly 主模型 |
-| `lightseekorg/kimi-k2.5-eagle3` | 双机 nightly draft 模型 |
-
-### Nightly/Weekly 精度测试（22 个）
-
-| 分组 | 模型仓库 ID |
-| --- | --- |
-| nightly accuracy-group-1 | `vllm-ascend/Qwen3-VL-8B-Instruct-W8A8` |
-| nightly accuracy-group-1 | `Qwen/Qwen3-8B` |
-| nightly accuracy-group-1 | `Qwen/Qwen2-Audio-7B-Instruct` |
-| nightly accuracy-group-1 | `vllm-ascend/Qwen3-8B-W8A8` |
-| nightly accuracy-group-1 | `Qwen/Qwen3-VL-8B-Instruct` |
-| nightly accuracy-group-1 | `nv-community/Minitron-8B-Base` |
-| nightly accuracy-group-3 | `Qwen/Qwen3-30B-A3B` |
-| nightly accuracy-group-3 | `Qwen/Qwen3-VL-30B-A3B-Instruct` |
-| nightly accuracy-group-3 | `vllm-ascend/Qwen3-30B-A3B-W8A8` |
-| nightly accuracy-group-4 | `Qwen/Qwen3-Next-80B-A3B-Instruct` |
-| nightly accuracy-group-4 | `Qwen/Qwen3-Omni-30B-A3B-Instruct` |
-| nightly accuracy-group-4 | `mistralai/Mixtral-8x7B-Instruct-v0.1` |
-| PR-only accuracy-group-1 | `LLM-Research/gemma-3-4b-it` |
-| PR-only accuracy-group-1 | `Shanghai_AI_Laboratory/internlm3-8b-instruct` |
-| PR-only accuracy-group-1 | `Qwen/Qwen3-ASR-1.7B` |
-| PR-only accuracy-group-1 | `OpenGVLab/InternVL3_5-8B-hf` |
-| PR-only accuracy-group-1 | `llava-hf/llava-onevision-qwen2-0.5b-ov-hf` |
-| PR-only accuracy-group-2 | `Qwen/Qwen2.5-Math-RM-72B` |
-| PR-only accuracy-group-2 | `Tencent-Hunyuan/Hunyuan-A13B-Instruct` |
-| weekly accuracy-group-2 | `PaddlePaddle/ERNIE-4.5-21B-A3B-PT` |
-| weekly accuracy-group-2 | `LLM-Research/Molmo-7B-D-0924` |
-| weekly accuracy-group-2 | `LLM-Research/Llama-3.2-3B-Instruct` |
-
-### PR one-card E2E（39 个，含 LoRA/draft）
-
-- `allenai/OLMoE-1B-7B-0125-Instruct`
-- `amd/PARD-Llama-3.2-1B`
-- `BAAI/bge-m3`
-- `BAAI/bge-reranker-v2-m3`
-- `charent/self_cognition_Alice`
-- `charent/self_cognition_Bob`
-- `deepseek-ai/dspark_qwen3_8b_block7`
-- `dengcao/ms-marco-MiniLM-L6-v2`
-- `Howeee/Qwen2.5-1.5B-apeach`
-- `intfloat/multilingual-e5-small`
-- `jeeejeee/llama32-3b-text2sql-spider`
-- `LLM-Research/Meta-Llama-3.1-8B-Instruct`
-- `meta-llama/Llama-3.2-3B-Instruct`
-- `MNN/Qwen3-VL-8B-Instruct-Eagle3`
-- `openai-mirror/whisper-large-v3-turbo`
-- `openbmb/MiniCPM-2B-sft-bf16`
-- `OpenBMB/MiniCPM4-0.5B`
-- `Qwen/Qwen2-Audio-7B-Instruct`
-- `Qwen/Qwen3-0.6B`
-- `Qwen/Qwen3-1.7B`
-- `Qwen/Qwen3-8B`
-- `Qwen/Qwen3-Embedding-0.6B`
-- `Qwen/Qwen3-Reranker-0.6B`
-- `Qwen/Qwen3-VL-8B-Instruct`
-- `Qwen/Qwen3.5-0.8B`
-- `RedHatAI/Qwen3-8B-speculator.eagle3`
-- `sentence-transformers/all-MiniLM-L12-v2`
-- `Tencent-Hunyuan/HunyuanOCR`
-- `vllm-ascend/DeepSeek-V2-Lite-W8A8`
-- `vllm-ascend/EAGLE-LLaMA3.1-Instruct-8B`
-- `vllm-ascend/EAGLE3-LLaMA3.1-Instruct-8B`
-- `vllm-ascend/ilama-3.2-1B`
-- `vllm-ascend/ilama-text2sql-spider`
-- `vllm-ascend/olmoe-instruct-text2sql-spider`
-- `vllm-ascend/qwen-linear-algebra-coder`
-- `vllm-ascend/Qwen3-1.7B_eagle3`
-- `vllm-ascend/Qwen3-8B-W8A8`
-- `wemaster/deepseek_mtp_main_random_bf16`
-- `z-lab/Qwen3-8B-DFlash-b16`
-
-### A2 doctest（1 个）
-
-- `Qwen/Qwen2.5-0.5B-Instruct`
-
-> 上述各小节存在重复；去重后的总数是 70，不是 12 + 22 + 39 + 1。
-
-## vLLM v0.26.0 上游 A2 套件候选（178 个，保守保护）
-
-来源套件：`e2e-upstream_singlecard`、`e2e-upstream_a2_2`、`e2e-upstream_a2_4`、`e2e-upstream_online_1`、`e2e-upstream_pr`。
-
-这里是上游测试源码中的模型式仓库引用。部分测试只读取配置、使用 dummy weights，或会因平台条件而 skip，所以不能断言 178 个都会在每次 CI 中加载；但如果目标是“清理后不因缺缓存破坏任何 A2 上游测试”，建议对其中**已缓存的目录全部保留**。
-
-- `ai21labs/Jamba-tiny-dev`
-- `Alibaba-NLP/gte-Qwen2-1.5B-instruct`
-- `allenai/Molmo2-4B`
-- `allenai/Olmo-3-7B-Think`
-- `answerdotai/answerai-colbert-small-v1`
-- `athrael-soju/colqwen3.5-4.5B-v3`
-- `BAAI/bge-base-en`
-- `BAAI/bge-base-en-v1.5`
-- `BAAI/bge-base-zh`
-- `BAAI/bge-base-zh-v1.5`
-- `BAAI/bge-code-v1`
-- `BAAI/bge-large-en`
-- `BAAI/bge-large-en-v1.5`
-- `BAAI/bge-large-zh`
-- `BAAI/bge-large-zh-noinstruct`
-- `BAAI/bge-large-zh-v1.5`
-- `BAAI/bge-m3`
-- `BAAI/bge-reranker-base`
-- `BAAI/bge-reranker-large`
-- `BAAI/bge-reranker-v2-m3`
-- `BAAI/bge-small-en`
-- `BAAI/bge-small-en-v1.5`
-- `BAAI/bge-small-zh`
-- `BAAI/bge-small-zh-v1.5`
-- `baidu/ERNIE-4.5-21B-A3B-Thinking`
-- `charent/self_cognition_Alice`
-- `cross-encoder/ms-marco-MiniLM-L-6-v2`
-- `cross-encoder/ms-marco-TinyBERT-L-2-v2`
-- `deepseek-ai/DeepSeek-OCR`
-- `deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B`
-- `deepseek-ai/DeepSeek-V2-Lite`
-- `deepseek-ai/DeepSeek-V2-Lite-Chat`
-- `deepseek-ai/DeepSeek-V3`
-- `deepseek-ai/DeepSeek-V3.1`
-- `distilbert/distilgpt2`
-- `facebook/chameleon-7b`
-- `facebook/opt-125m`
-- `FacebookAI/roberta-base`
-- `google/gemma-4-12B-it`
-- `google/gemma-4-E2B-it`
-- `google/siglip-base-patch16-224`
-- `google/siglip-so400m-patch14-384`
-- `google/siglip2-base-patch16-224`
-- `google/siglip2-giant-opt-patch16-384`
-- `h2oai/h2ovl-mississippi-2b`
-- `h2oai/h2ovl-mississippi-800m`
-- `HCompany/Holo2-4B`
-- `hmellor/tiny-random-LlamaForCausalLM`
-- `HuggingFaceH4/zephyr-7b-beta`
-- `HuggingFaceM4/Idefics3-8B-Llama3`
-- `HuggingFaceTB/SmolLM2-135M-Instruct`
-- `HuggingFaceTB/SmolVLM-256M-Instruct`
-- `HuggingFaceTB/SmolVLM2-2.2B-Instruct`
-- `ibm-granite/granite-3.1-8b-instruct`
-- `ibm-granite/granite-3.3-8b-instruct`
-- `ibm-granite/granite-3.3-8b-rag-agent-lib`
-- `ibm-granite/granite-3.3-8b-rag-agent-lib/answerability_prediction_lora`
-- `ibm-granite/granite-4.0-h-tiny`
-- `ibm-nasa-geospatial/Prithvi-EO-2.0-300M-BurnScars`
-- `ibm-nasa-geospatial/Prithvi-EO-2.0-300M-TL-Sen1Floods11`
-- `ibm-research/PowerMoE-3b`
-- `ibm/PowerLM-3b`
-- `ibm/PowerMoE-3b`
-- `internlm/internlm2-1_8b-reward`
-- `intfloat/e5-base`
-- `intfloat/e5-large`
-- `intfloat/e5-small`
-- `intfloat/multilingual-e5-base`
-- `intfloat/multilingual-e5-large`
-- `intfloat/multilingual-e5-large-instruct`
-- `intfloat/multilingual-e5-small`
-- `jason9693/Qwen2.5-1.5B-apeach`
-- `jinaai/jina-colbert-v2`
-- `jinaai/jina-embeddings-v3`
-- `jinaai/jina-embeddings-v5-text-small`
-- `jinaai/jina-reranker-v2-base-multilingual`
-- `jinaai/jina-reranker-v3`
-- `Kwai-Keye/Keye-VL-8B-Preview`
-- `LiquidAI/LFM2.5-1.2B-Instruct`
-- `llava-hf/llava-1.5-7b-hf`
-- `llava-hf/LLaVA-NeXT-Video-7B-hf`
-- `llava-hf/llava-onevision-qwen2-0.5b-ov-hf`
-- `llava-hf/llava-v1.6-mistral-7b-hf`
-- `meta-llama/Llama-2-7b-hf`
-- `meta-llama/Llama-4-Scout-17B-16E-Instruct`
-- `microsoft/Phi-3.5-MoE-instruct`
-- `microsoft/Phi-3.5-vision-instruct`
-- `microsoft/Phi-4-multimodal-instruct`
-- `MiniMaxAI/MiniMax-M2`
-- `mistralai/Magistral-Small-2509`
-- `mistralai/Ministral-8B-Instruct-2410`
-- `mistralai/Mistral-7B-Instruct-v0.1`
-- `mistralai/Mistral-7B-Instruct-v0.3`
-- `mistralai/Mistral-Small-3.1-24B-Instruct-2503`
-- `mistralai/Mistral-Small-3.2-24B-Instruct-2506`
-- `mistralai/Mixtral-8x7B-Instruct-v0.1`
-- `mistralai/Voxtral-Mini-3B-2507`
-- `mixedbread-ai/mxbai-rerank-base-v2`
-- `mixedbread-ai/mxbai-rerank-large-v2`
-- `ModernVBERT/colmodernvbert-merged`
-- `moondream/moondream3-preview`
-- `moonshotai/Kimi-K2-Instruct`
-- `moonshotai/Kimi-K2.5`
-- `MrLight/dse-qwen2-2b-mrl-v1`
-- `muziyongshixin/Qwen2.5-VL-7B-for-VideoCls`
-- `nie3e/sentiment-polish-gpt2-small`
-- `nvidia/Llama-3.1-Nemotron-Nano-VL-8B-V1`
-- `nvidia/llama-nemotron-embed-1b-v2`
-- `nvidia/llama-nemotron-embed-vl-1b-v2`
-- `nvidia/llama-nemotron-rerank-1b-v2`
-- `nvidia/llama-nemotron-rerank-vl-1b-v2`
-- `openai-community/gpt2`
-- `openai-community/gpt2-large`
-- `openai/gpt-oss-120b`
-- `openai/gpt-oss-20b`
-- `openai/whisper-large-v3`
-- `openbmb/MiniCPM-Llama3-V-2_5`
-- `OpenGVLab/InternVL2-2B`
-- `OpenMOSS-Team/MOSS-Audio-4B-Instruct`
-- `papluca/xlm-roberta-base-language-detection`
-- `Qwen/Qwen1.5-7B`
-- `Qwen/Qwen2-0.5B-Instruct`
-- `Qwen/Qwen2-1.5B-Instruct`
-- `Qwen/Qwen2-1.5B-Instruct-AWQ`
-- `Qwen/Qwen2-Audio-7B-Instruct`
-- `Qwen/Qwen2-VL-2B-Instruct`
-- `Qwen/Qwen2-VL-7B-Instruct`
-- `Qwen/Qwen2.5-0.5B-Instruct`
-- `Qwen/Qwen2.5-1.5B-Instruct`
-- `Qwen/Qwen2.5-Omni-3B`
-- `Qwen/Qwen2.5-Omni-7B`
-- `Qwen/Qwen2.5-VL-3B-Instruct`
-- `Qwen/Qwen2.5-VL-7B-Instruct`
-- `Qwen/Qwen3-0.6B`
-- `Qwen/Qwen3-1.7B`
-- `Qwen/Qwen3-32B`
-- `Qwen/Qwen3-4B`
-- `Qwen/Qwen3-4B-Thinking-2507`
-- `Qwen/Qwen3-8B`
-- `Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8`
-- `Qwen/Qwen3-Embedding-0.6B`
-- `Qwen/Qwen3-ForcedAligner-0.6B`
-- `Qwen/Qwen3-Omni-30B-A3B-Instruct`
-- `Qwen/Qwen3-Reranker-0.6B`
-- `Qwen/Qwen3-VL-2B-Instruct`
-- `Qwen/Qwen3-VL-4B-Instruct`
-- `Qwen/Qwen3-VL-Reranker-2B`
-- `Qwen/Qwen3.5-35B-A3B-FP8`
-- `Qwen/Qwen3.5-397B-A17B`
-- `Rami/multi-label-class-classification-on-github-issues`
-- `Salesforce/Llama-xLAM-2-8B-fc-r`
-- `sentence-transformers/all-MiniLM-L12-v2`
-- `Snowflake/snowflake-arctic-embed-l`
-- `Snowflake/snowflake-arctic-embed-l-v2.0`
-- `Snowflake/snowflake-arctic-embed-m`
-- `Snowflake/snowflake-arctic-embed-m-long`
-- `Snowflake/snowflake-arctic-embed-m-v1.5`
-- `Snowflake/snowflake-arctic-embed-m-v2.0`
-- `Snowflake/snowflake-arctic-embed-s`
-- `Snowflake/snowflake-arctic-embed-xs`
-- `stepfun-ai/Step-3.5-Flash`
-- `stepfun-ai/step3`
-- `swapnilbp/llama_tweet_ptune`
-- `tencent/Hunyuan-A13B-Instruct`
-- `tencent/Hy3-preview`
-- `TheBloke/TinyLlama-1.1B-Chat-v1.0-GPTQ`
-- `TIGER-Lab/VLM2Vec-Full`
-- `TinyLlama/TinyLlama-1.1B-Chat-v1.0`
-- `TitanML/tiny-mixtral`
-- `tomaarsen/Qwen3-Reranker-0.6B-seq-cls`
-- `typeof/zephyr-7b-beta-lora`
-- `voyageai/voyage-4-nano`
-- `XiaomiMiMo/MiMo-7B-Base`
-- `yard1/llama-2-7b-sql-lora-test`
-- `z-lab/Qwen3-8B-DFlash-b16`
-- `zai-org/chatglm3-6b`
-- `zai-org/GLM-4.1V-9B-Thinking`
-- `zai-org/GLM-4.6V-Flash`
-
-## 清理时的边界和风险
-
-1. `ibm-granite/granite-3.3-8b-rag-agent-lib/answerability_prediction_lora` 是仓库内子目录；实际缓存应保护整个 `ibm-granite/granite-3.3-8b-rag-agent-lib`。
-2. `VLLM_TEST_MODEL` 和 `WEIGHT_TRANSFER_TEST_MODEL` 可在运行时覆盖默认模型。当前工作流没有固定覆盖值；若 A2 机器上额外设置了这些环境变量，对应模型也必须保护。
-3. `/nightly` 支持用 `vllm_ascend_ref` 读取尚未合并的 PR 配置；PR 临时新增的模型不会出现在基于当前 `main` 生成的清单里。
-4. `.github/workflows/misc/model_dataset_list.json` 是下载/预热登记表，是测试依赖的超集；本清单没有把登记表中所有模型都算作当前 A2 测试依赖。
-5. 本清单只统计模型、LoRA 和 speculative/draft 模型，不统计数据集。清理数据集缓存前需要另做一份数据集依赖清单。
-
-## 统计来源
-
-- `.github/workflows/configs/nightly_config.yaml`
-- `.github/workflows/configs/weekly_config.yaml`
-- `tests/e2e/nightly/single_node/models/configs/*.yaml`（A2 matrix 引用项）
-- `tests/e2e/nightly/multi_node/**/config/*.yaml`（A2 matrix 引用项）
-- `tests/e2e/models/configs/*.yaml`（A2 accuracy matrix 引用项）
-- `tests/e2e/pull_request/one_card/**/*.py`（排除 `_310p`）及其相关 fixture
-- `tests/e2e/doctests/*.sh`
-- `.github/workflows/scripts/upstream_config.yaml`
-- vLLM `v0.26.0` 对应上游测试源码
+apiVersion: v1
+  kind: Config
+  clusters:
+  - cluster:
+      certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJQ21JL0RXWXR0YzB3RFFZSk
+  tvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TmpBMk1EUXdNelF4TkRGYUZ3MHpOakEyTURFd016UTJOREZh
+  TUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUURCaTNWUmxMSStuZU
+  lRVFdWOFB4WmdkVFZSZUw0Qkt4SGJ0QWNrQnNwZ1kvUTVOTWZWZ2ZRZTFhWWgKN29HaS9hUGhKdlN0RmNXUWhGY1A0NHBYK3l1WithSlA3Z2xaMEViYWRp
+  ZitjRCt5YmdwRlU0RWZVbWhOUStWSwoxZ0dEbStRZWZNMU5rYTdNWFBCQ3ZTYlhhNDdwcTUwU2Jab2tXc1h5YnplUzUvNHdGdGNHVE1tRW5hSkJZaVRVCn
+  p1V3JDaG50UlQzN2FQdjFXb2UrSzV5QnBUU3pTOUswQWVWODZGM21uSWhjeTNnZVU2T0poUXlqelpjTE05LzIKT3ByL3dWSnFKZzU2WVA5eUsxamdtTEVs
+  dEUvNkNsd3lSV2hHSnAzQUlydURTNzN1NXl5eXMvTFFYblV5QXl1bgovcjNQN29kV2htYVRUVnpOclU1UFl5clRiQWlUQWdNQkFBR2pXVEJYTUE0R0ExVW
+  REd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJSU0dZOHR5OThkRE9rZ0hSOHNucXdqdGNiaGxUQVYKQmdOVkhS
+  RUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQklWM2JmNlJFbQpuSU00NEhHbHdpU3oyR3hKbjhsZ04zTThXM2FnTk
+  FDYmROZUhMUW1rMjc3SWZKTlBuZVdzR2VWSHJsbjhKejNpCkxhSFRnQVZIM1lRdi84QjZ0MWJsaVNLRW9ZTysvTnd1cGUzdEdVWEJKMjFuUHcwVlh6aWtW
+  NnVMTi82WjZTNXIKcGw0bmxqS25xcjUwa0JBditJTEhFa1IySGRHYkZWZzdqM1VHMVQ0ZklNdFp1WSswaElmSFlhU0lvT1JLWDhOKwp6TFRRNUxyVi9ldk
+  pLbTVVUUd6WTA2WmlRRVZRNFpGTWhXNzBuSnk2aVR4czlRZXRjbFE5SWFGdUFTenFiVGpyClJvenJ2cEp3V3VobmZxQ1BTZ2FobkZrREprY013UmRFODdB
+  UHZ2dGJyUE11VzZpZVNIOVYrVEJoUzJSdGg2SloKYW8wUHlHNElOWEVPCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+      server: https://123.60.71.205:6443
+    name: arc-prod
+  contexts:
+  - context:
+      cluster: arc-prod
+      user: arc-pod-operator
+    name: arc-pod-operator@arc-prod
+  current-context: arc-pod-operator@arc-prod
+  users:
+  - name: arc-pod-operator
+    user:
+      token:
+  eyJhbGciOiJSUzI1NiIsImtpZCI6IkhXMWZDdnZMVGxucEUtOGtXb2tFNUZVXzdFYnpVUFFTV2M5bFliZmI1MkEifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3N
+  lcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJhcmMtc3lzdGVtIiwia3ViZXJuZXRlcy5pby9zZXJ2a
+  WNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImFyYy1wb2Qtb3BlcmF0b3ItdG9rZW4iLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWN
+  jb3VudC5uYW1lIjoiYXJjLXBvZC1vcGVyYXRvciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjkyN2E5Z
+  TdlLTdhYzUtNDc0Mi1hOGEyLTliMmZmMDA5YjM0NyIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDphcmMtc3lzdGVtOmFyYy1wb2Qtb3BlcmF0b3I
+  ifQ.VHJNCRAUGApFDTabQE862dXS6TqymeZa7IrOL-VDLgNiq_UTUyn_5W0XbTozQCP12ntmczoAGMzxAjlUuixRkvx_wff7qQBew3Gw1muhAe2wxaUMA_
+  nL-mWTRnIiaRC-R4m2ANKKPn_OH2F8l4lJuoYBggya-iYRORrUr0zNcd35iXMR3D-9ly7Mh_snfHyld5cV7JYttMOoWXU5VKPoeQ3dlU5sGTOz-OsnybkQ
+  tnhtFimJGtHk1abFjHnZSN5GZzEcnhrhOKL57Lf94dcdQpbsP15VWxEIwudNCGX9Wd2-GYWRkPi4KGeECcAbRtGpasMjTycSHJ3YT17N0vRtgA
